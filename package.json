@@ -5,7 +5,7 @@
     "main": "server.js",
     "repository": {
         "type": "git",
-        "url": "https://auromota@bitbucket.org/daysiteam/daysi_azure.git"
+        "url": "https://auromota@bitbucket.org/daysiteam/daysi_api.git"
     },
     "keywords": [
         "agenda",
