@@ -12,4 +12,4 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(users);
 
-app.listen(process.env.PORT || 8080);
+app.listen(8080);

@@ -1,6 +1,5 @@
 var express = require('express');
 var users = express.Router();
-var dao = getmodule('./database/users');
 var db = getmodule('database/connection');
 
 users.get('/users', function(req, res) {
