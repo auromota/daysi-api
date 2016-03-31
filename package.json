@@ -1,6 +1,6 @@
 {
-    "name": "Daysi API",
-    "version": "0.1",
+    "name": "DaysiAPI",
+    "version": "0.0.1",
     "description": "Daysi makes your days easier.",
     "main": "server.js",
     "repository": {
