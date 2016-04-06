@@ -13,8 +13,11 @@ var userController = {
             res.status(400).json(err);
         }
     },
-    users: function(req, res, next) {
+    getAll: function(req, res, next) {
         service.getAll(req, res, next);
+    },
+    getUser: function(req, res, next) {
+        service.getUser(req, res, next);
     }
 };
 
