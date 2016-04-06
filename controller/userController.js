@@ -2,13 +2,24 @@ var createSchema = require('json-gate').createSchema;
 var service = getmodule('service/users');
 
 var userController = {
-    signup: function (req, res, next) {
+    signUp: function (req, res, next) {
         try {
             var schema = getmodule('schemas/signup');
             if (schema) {
                 schema.validate(req.body);
             }
-            service.signup(req, res, next);
+            service.signUp(req, res, next);
+        } catch(err) {
+            res.status(400).json(err);
+        }
+    },
+    signIn: function (req, res, next) {
+        try {
+            var schema = getmodule('schemas/signin');
+            if (schema) {
+                schema.validate(req.body);
+            }
+            service.signIn(req, res, next);
         } catch(err) {
             res.status(400).json(err);
         }

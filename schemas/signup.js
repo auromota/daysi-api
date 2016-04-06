@@ -31,7 +31,7 @@ var schema = createSchema({
        username: {
            type: 'string',
            required: true,
-           minLength: 6,
+           minLength: 3,
            maxLength: 30
        },
        photo_privacy: {
