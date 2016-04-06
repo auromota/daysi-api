@@ -1,16 +1,29 @@
 var express = require('express');
-var users = express.Router();
 var db = getmodule('database/connection');
 
-users.get('/users', function(req, res) {
-    db.get(function(err, connection) {
-        if(err) res.end();
-        connection.query('SELECT * from users', function(err, rows) {
-            connection.release();
+var users = {
+    getAll: function(req, res, next) {
+        db.get(function(err, connection) {
             if(err) res.end();
-            res.status(200).json(rows);
+            else {
+                connection.query('SELECT * FROM users', function(err, rows) {
+                    connection.release();
+                    if(err) res.end();
+                    else res.status(200).json(rows);
+                });
+            }
         });
-    });
-});
+    },
+    signup: function(req, res, next) {
+        db.get(function(err, connection) {
+            if(err) res.end();
+            else {
+                connection.query(   'INSERT INTO users(email, password, name, gender, ' +
+                                    'photo, username, photo_privacy, name_privacy) VALUES ()');
+            }
+        })
+        res.status(200).json({name:'auro'});
+    }
+};
 
 module.exports = users;
