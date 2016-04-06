@@ -18,8 +18,10 @@ var users = {
         db.get(function(err, connection) {
             if(err) res.end();
             else {
-                connection.query(   'INSERT INTO users(email, password, name, gender, ' +
+                //connection.query(   'INSERT INTO users(email, password, name, gender, ' +
                                     'photo, username, photo_privacy, name_privacy) VALUES ()');
+                //TODO
+                res.end();
             }
         })
         res.status(200).json({name:'auro'});
