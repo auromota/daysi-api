@@ -8,7 +8,7 @@ var users = {
             else {
                 connection.query('SELECT * FROM users', function(err, rows) {
                     connection.release();
-                    if(err) res.end();
+                    if(err) res.status(500).json(err);
                     else res.status(200).json(rows);
                 });
             }
@@ -18,13 +18,13 @@ var users = {
         db.get(function(err, connection) {
             if(err) res.end();
             else {
-                //connection.query(   'INSERT INTO users(email, password, name, gender, ' +
-                                    'photo, username, photo_privacy, name_privacy) VALUES ()');
-                //TODO
-                res.end();
+                connection.query('INSERT INTO users SET ?', req.body, function(err, rows) {
+                    connection.release();
+                    if(err) res.status(500).json(err);
+                    else res.status(200).json(rows);
+                });
             }
         })
-        res.status(200).json({name:'auro'});
     }
 };
 

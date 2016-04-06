@@ -34,12 +34,12 @@ var schema = createSchema({
            minLength: 6,
            maxLength: 30
        },
-       photoPrivacy: {
+       photo_privacy: {
            type: 'integer',
            required: true,
            maximum: 1
        },
-       namePrivacy: {
+       name_privacy: {
            type: 'integer',
            required: true,
            maximum: 1
