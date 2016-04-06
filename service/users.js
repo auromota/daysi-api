@@ -1,4 +1,5 @@
 var express = require('express');
+var bcrypt = require('bcrypt-nodejs');
 var db = getmodule('database/connection');
 
 var users = {
@@ -18,6 +19,7 @@ var users = {
         db.get(function(err, connection) {
             if(err) res.end();
             else {
+                req.body.password = bcrypt.hashSync(req.body.password);
                 connection.query('INSERT INTO users SET ?', req.body, function(err, rows) {
                     connection.release();
                     if(err) res.status(500).json(err);
