@@ -21,8 +21,13 @@ var db = mysql.createPool({
 });*/
 
 var connection = {
-    get: function(callback) {
-        return db.getConnection(callback);
+    get: function(req, res, next, callback) {
+        return db.getConnection(function(err, connection) {
+            if(err) res.status(500).json(err);
+            else {
+                callback(connection);
+            }
+        });
     }
 };
 
