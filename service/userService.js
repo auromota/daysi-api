@@ -21,10 +21,10 @@ var users = {
             else {
                 if(rows && bcrypt.compareSync(credentials.password, rows[0].password)) {
                     var user = rows[0];
+                    delete user.password;
                     var token = jwt.sign(user, config.jwt_secret, {
                         expiresIn: 86400
                     });
-                    delete user.password;
                     res.status(200).json({
                         type: true,
                         data: user,

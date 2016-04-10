@@ -9,6 +9,7 @@ var auth = {
                 if(err) {
                     res.status(403).json({type: false, message: 'Failed to authenticate token.'});
                 } else {
+                    req.decoded = decoded;
                     next();
                 }
             });
