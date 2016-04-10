@@ -1,7 +1,6 @@
 var express = require('express');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('jsonwebtoken');
-var db = getmodule('database/connection');
 var config = getmodule('config');
 var dao = getmodule('database/userDao');
 
@@ -46,8 +45,8 @@ var users = {
         });
     },
     findUser: function(req, res, next) {
-        var user = req.body;
-        dao.findUser(user.userId, function(err, rows) {
+        var user_id = req.params.user_id;
+        dao.findUser(user_id, function(err, rows) {
             if(err) res.status(500).json(err);
             else res.status(200).json(rows[0]);
         });

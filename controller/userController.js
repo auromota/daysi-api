@@ -1,8 +1,7 @@
-var createSchema = require('json-gate').createSchema;
 var service = getmodule('service/userService');
 
 var userController = {
-    signUp: function (req, res, next) {
+    addUser: function (req, res, next) {
         try {
             var schema = getmodule('schemas/signup');
             if (schema) {

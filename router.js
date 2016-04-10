@@ -3,9 +3,9 @@ var router = express.Router();
 var userController = getmodule('controller/userController');
 var auth = getmodule('auth');
 
-router.route('/signup').post(userController.signUp);
 router.route('/signin').post(userController.signIn);
+router.route('/users').post(userController.addUser);
 router.route('/users').get(auth.isAuthorized, userController.findAll);
-router.route('/users/:userId').get(auth.isAuthorized, userController.findUser);
+router.route('/users/:user_id').get(auth.isAuthorized, userController.findUser);
 
 module.exports = router;

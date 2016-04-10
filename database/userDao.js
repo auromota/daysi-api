@@ -28,10 +28,10 @@ var users = {
             });
         });
     },
-    findUser: function(userId, callback) {
+    findUser: function(user_id, callback) {
         db.get(function(err, connection) {
             if(err) return callback(err);
-            connection.query('SELECT * FROM users WHERE user_id = ?', [userId], function(err, rows) {
+            connection.query('SELECT * FROM users WHERE user_id = ?', [user_id], function(err, rows) {
                 connection.release();
                 callback(err, rows);
             });
