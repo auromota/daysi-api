@@ -24,11 +24,11 @@ var userController = {
             res.status(400).json(err);
         }
     },
-    getAll: function(req, res, next) {
-        service.getAll(req, res, next);
+    findAll: function(req, res, next) {
+        service.findAll(req, res, next);
     },
-    getUser: function(req, res, next) {
-        service.getUser(req, res, next);
+    findUser: function(req, res, next) {
+        service.findUser(req, res, next);
     }
 };
 

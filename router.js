@@ -5,7 +5,7 @@ var auth = getmodule('auth');
 
 router.route('/signup').post(userController.signUp);
 router.route('/signin').post(userController.signIn);
-router.route('/users').get(auth.isAuthorized, userController.getAll);
-router.route('/users/:userId').get(auth.isAuthorized, userController.getUser);
+router.route('/users').get(auth.isAuthorized, userController.findAll);
+router.route('/users/:userId').get(auth.isAuthorized, userController.findUser);
 
 module.exports = router;

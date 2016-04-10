@@ -7,20 +7,22 @@ var dao = getmodule('database/userDao');
 
 var users = {
     signUp: function(req, res, next) {
-        req.body.sign_date = new Date();
-        req.body.password = bcrypt.hashSync(req.body.password);
-        dao.signUp(req, res, next, function(err, rows) {
+        var user = req.body;
+        user.sign_date = new Date();
+        user.password = bcrypt.hashSync(user.password);
+        dao.addUser(user, function(err, rows) {
             if(err) res.status(500).json(err);
             else res.status(200).json(rows);
         });
     },
     signIn: function(req, res, next) {
-        dao.signIn(req, res, next, function(err, rows) {
+        var credentials = req.body;
+        dao.findUserByUsername(credentials.username, function(err, rows) {
             if(err) res.status(500).json(err);
             else {
-                if(rows && bcrypt.compareSync(req.body.password, rows[0].password)) {
+                if(rows && bcrypt.compareSync(credentials.password, rows[0].password)) {
                     var user = rows[0];
-                    var token = jwt.sign(req.body, config.jwt_secret, {
+                    var token = jwt.sign(user, config.jwt_secret, {
                         expiresIn: 86400
                     });
                     delete user.password;
@@ -37,14 +39,15 @@ var users = {
             }
         });
     },
-    getAll: function(req, res, next) {
-        dao.getAll(req, res, next, function(err, rows) {
+    findAll: function(req, res, next) {
+        dao.findAll(function(err, rows) {
             if(err) res.status(500).json(err);
             else res.status(200).json(rows);
         });
     },
-    getUser: function(req, res, next) {
-        dao.getUser(req, res, next, function(err, rows) {
+    findUser: function(req, res, next) {
+        var user = req.body;
+        dao.findUser(user.userId, function(err, rows) {
             if(err) res.status(500).json(err);
             else res.status(200).json(rows[0]);
         });

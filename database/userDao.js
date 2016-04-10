@@ -1,33 +1,37 @@
 var db = getmodule('database/connection');
 
 var users = {
-    signUp: function(req, res, next, callback) {
-        db.get(req, res, next, function(connection) {
-            connection.query('INSERT INTO users SET ?', req.body, function(err, rows) {
+    addUser: function(user, callback) {
+        db.get(function(err, connection) {
+            if(err) return callback(err);
+            connection.query('INSERT INTO users SET ?', user, function(err, rows) {
                 connection.release();
                 callback(err, rows);
             });
         });
     },
-    signIn: function(req, res, next, callback) {
-        db.get(req, res, next, function(connection) {
-            connection.query('SELECT * FROM users WHERE username = ?', [req.body.username], function(err, rows) {
+    findUserByUsername: function(username, callback) {
+        db.get(function(err, connection) {
+            if(err) return callback(err);
+            connection.query('SELECT * FROM users WHERE username = ?', [username], function(err, rows) {
                 connection.release();
                 callback(err, rows);
             })
         });
     },
-    getAll: function(req, res, next, callback) {
-        db.get(req, res, next, function(connection) {
+    findAll: function(callback) {
+        db.get(function(err, connection) {
+            if(err) return callback(err);
             connection.query('SELECT * FROM users', function(err, rows) {
                 connection.release();
                 callback(err, rows);
             });
         });
     },
-    getUser: function(req, res, next, callback) {
-        db.get(req, res, next, function(connection) {
-            connection.query('SELECT * FROM users WHERE user_id = ?', [req.params.userId], function(err, rows) {
+    findUser: function(userId, callback) {
+        db.get(function(err, connection) {
+            if(err) return callback(err);
+            connection.query('SELECT * FROM users WHERE user_id = ?', [userId], function(err, rows) {
                 connection.release();
                 callback(err, rows);
             });
