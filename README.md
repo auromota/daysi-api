@@ -1,4 +1,4 @@
-# daysi_api
+# Daysi API
 Daysi is a time planning tool.
 
 ## Synopsys
