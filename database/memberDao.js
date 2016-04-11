@@ -18,6 +18,15 @@ var memberDao = {
                 callback(err, rows);
             });
         });
+    },
+    isAdmin: function(user_id, group_id, callback) {
+        db.get(function(err, connection) {
+            if(err) return callback(err);
+            connection.query('SELECT is_admin FROM members WHERE user_id = ? AND group_id = ?', [user_id, group_id], function(err, rows) {
+                connection.release();
+                callback(err, rows);
+            });
+        });
     }
 }
 

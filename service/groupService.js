@@ -1,8 +1,7 @@
 var express = require('express');
 var config = getmodule('config');
 var groupDao = getmodule('database/groupDao');
-var userDao = getmodule('database/userDao');
-var memberDao = getmodule('database/memberDao');
+var memberUtil = getmodule('util/memberUtil');
 
 var groupService = {
     addGroup: function(req, res, next) {
@@ -13,17 +12,10 @@ var groupService = {
         groupDao.addGroup(group, function(err, rows) {
             if(err) res.status(500).json(err);
             else {
-                var member = {
-                    user_id : user.user_id,
-                    group_id : rows.insertId,
-                    joining_date : new Date(),
-                    is_admin : true,
-                    was_admin : true
-                };
-                memberDao.insertMember(member, function(err, rows) {
+                memberUtil.addAdmin(user.user_id, rows.insertId, function(err, rows) {
                     if(err) res.status(500).json(err);
                     else res.status(200).json(rows);
-                });
+                })
             }
         });
     },
@@ -68,33 +60,20 @@ var groupService = {
                 if(!row.photo_privacy) user.photo = row.photo;
                 if(!row.email_privacy) user.email = row.email;
                 if(!row.name_privacy) user.name = row.creator;
-                memberDao.findGroupMembers(group_id, function(err, rows) {
+                memberUtil.findMembers(group_id, function(err, rows) {
                     if(err) res.status(500).json(err);
                     else {
-                        var members = [], admins = [];
-                        rows.forEach(function(member) {
-                            delete member.password;
-                            if(member.photo_privacy) delete member.photo;
-                            if(member.email_privacy) delete member.email;
-                            if(member.name_privacy) delete member.name;
-                            delete member.photo_privacy;
-                            delete member.email_privacy;
-                            delete member.name_privacy;
-                            delete member.push_id;
-                            if(member.is_admin) admins.push(member);
-                            else members.push(member);
-                        });
                         res.status(200).json({
                             group_id : row.group_id,
                             name : row.name,
                             description : row.description,
                             creation_date : row.creation_date,
                             group_creator : user,
-                            members: members,
-                            admins: admins
+                            members: rows.members,
+                            admins: rows.admins
                         });
                     }
-                });
+                })
             }
         });
     },
@@ -105,15 +84,9 @@ var groupService = {
             else {
                 if(rows && rows.length) {
                     var oldGroup = rows[0];
-                    memberDao.findGroupMembers(oldGroup.group_id, function(err, rows) {
+                    memberUtil.isAdmin(req.user.user_id, oldGroup.group_id, function(err, isAdmin) {
                         if(err) res.status(500).json(err);
                         else {
-                            var isAdmin = false;
-                            rows.forEach(function(row) {
-                                if(row.user_id && row.is_admin) {
-                                    isAdmin = true;
-                                }
-                            });
                             if(isAdmin) {
                                 groupDao.updateGroup(group, function(err, rows) {
                                     if(err) res.status(500).json(err);
