@@ -18,7 +18,7 @@ var memberDao = {
                 callback(err, rows);
             });
         });
-    },
+    }
 }
 
 module.exports = memberDao;
