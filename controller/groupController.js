@@ -17,6 +17,17 @@ var groupController = {
     },
     findGroup: function(req, res, next) {
         service.findGroup(req, res, next);
+    },
+    updateGroup: function(req, res, next) {
+        try {
+            var schema = getmodule('schemas/editGroup');
+            if(schema) {
+                schema.validate(req.body);
+            }
+            service.updateGroup(req, res, next);
+        } catch(err) {
+            res.status(400).json(err);
+        }
     }
 };
 

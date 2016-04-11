@@ -68,13 +68,65 @@ var groupService = {
                 if(!row.photo_privacy) user.photo = row.photo;
                 if(!row.email_privacy) user.email = row.email;
                 if(!row.name_privacy) user.name = row.creator;
-                res.status(200).json({
-                    group_id : row.group_id,
-                    name : row.name,
-                    description : row.description,
-                    creation_date : row.creation_date,
-                    group_creator : user
+                memberDao.findGroupMembers(group_id, function(err, rows) {
+                    if(err) res.status(500).json(err);
+                    else {
+                        var members = [], admins = [];
+                        rows.forEach(function(member) {
+                            delete member.password;
+                            if(member.photo_privacy) delete member.photo;
+                            if(member.email_privacy) delete member.email;
+                            if(member.name_privacy) delete member.name;
+                            delete member.photo_privacy;
+                            delete member.email_privacy;
+                            delete member.name_privacy;
+                            delete member.push_id;
+                            if(member.is_admin) admins.push(member);
+                            else members.push(member);
+                        });
+                        res.status(200).json({
+                            group_id : row.group_id,
+                            name : row.name,
+                            description : row.description,
+                            creation_date : row.creation_date,
+                            group_creator : user,
+                            members: members,
+                            admins: admins
+                        });
+                    }
                 });
+            }
+        });
+    },
+    updateGroup: function(req, res, next) {
+        var group = req.body;
+        groupDao.findGroup(group.group_id, function(err, rows) {
+            if(err) res.status(500).json(err);
+            else {
+                if(rows && rows.length) {
+                    var oldGroup = rows[0];
+                    memberDao.findGroupMembers(oldGroup.group_id, function(err, rows) {
+                        if(err) res.status(500).json(err);
+                        else {
+                            var isAdmin = false;
+                            rows.forEach(function(row) {
+                                if(row.user_id && row.is_admin) {
+                                    isAdmin = true;
+                                }
+                            });
+                            if(isAdmin) {
+                                groupDao.updateGroup(group, function(err, rows) {
+                                    if(err) res.status(500).json(err);
+                                    else res.status(200).json(rows);
+                                });
+                            } else {
+                                res.status(403).json({message: "You can only edit groups of which you are administrator."});
+                            }
+                        }
+                    })
+                } else {
+                    res.status(400).json({message: "Group ID not found."});
+                }
             }
         });
     }

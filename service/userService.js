@@ -22,6 +22,7 @@ var users = {
                 if(rows && rows.length && bcrypt.compareSync(credentials.password, rows[0].password)) {
                     var user = rows[0];
                     delete user.password;
+                    delete user.photo;
                     var token = jwt.sign(user, config.jwt_secret, {
                         expiresIn: 86400
                     });

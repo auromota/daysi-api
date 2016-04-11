@@ -12,5 +12,6 @@ router.route('/users').put(auth.isAuthorized, userController.updateUser)
 router.route('/groups').post(auth.isAuthorized, groupController.addGroup);
 router.route('/groups').get(auth.isAuthorized, groupController.findAll);
 router.route('/groups/:group_id').get(auth.isAuthorized, groupController.findGroup);
+router.route('/groups').put(auth.isAuthorized, groupController.updateGroup);
 
 module.exports = router;
