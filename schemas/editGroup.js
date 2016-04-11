@@ -9,20 +9,20 @@ var schema = createSchema({
             minLength: 3,
             maxLength: 50
         },
-       description: {
-           type: 'string',
-           required: false,
-           maxLength: 256
-       },
-       privacy: {
-           type: 'boolean',
-           required: false
-       },
-       group_id: {
-           type: 'integer',
-           required: true
-       }
-   }
+        description: {
+            type: 'string',
+            required: false,
+            maxLength: 256
+        },
+        privacy: {
+            type: 'boolean',
+            required: false
+        },
+        group_id: {
+            type: 'integer',
+            required: true
+        }
+    }
 });
 
 module.exports = schema;

@@ -9,11 +9,11 @@ var schema = createSchema({
             minLength: 3,
             maxLength: 30
         },
-       password: {
-           type: 'string',
-           required: true,
-           minLength: 6
-       }
+        password: {
+            type: 'string',
+            required: true,
+            minLength: 6
+        }
     }
 });
 

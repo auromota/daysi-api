@@ -9,16 +9,16 @@ var schema = createSchema({
             minLength: 3,
             maxLength: 50
         },
-       description: {
-           type: 'string',
-           required: false,
-           maxLength: 256
-       },
-       privacy: {
-           type: 'boolean',
-           required: true
-       }
-   }
+        description: {
+            type: 'string',
+            required: false,
+            maxLength: 256
+        },
+        privacy: {
+            type: 'boolean',
+            required: true
+        }
+    }
 });
 
 module.exports = schema;
