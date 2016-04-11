@@ -19,7 +19,7 @@ var users = {
         dao.findUserByUsername(credentials.username, function(err, rows) {
             if(err) res.status(500).json(err);
             else {
-                if(rows && bcrypt.compareSync(credentials.password, rows[0].password)) {
+                if(rows && rows.length && bcrypt.compareSync(credentials.password, rows[0].password)) {
                     var user = rows[0];
                     delete user.password;
                     var token = jwt.sign(user, config.jwt_secret, {
@@ -92,6 +92,11 @@ var users = {
                     } else {
                         res.status(500).json({message: 'Old password is required.'});
                     }
+                } else {
+                    dao.updateUser(user, function(err, rows) {
+                        if(err) res.status(500).json(err);
+                        else res.status(200).json(rows);
+                    });
                 }
             }
         });

@@ -3,7 +3,7 @@ var service = getmodule('service/userService');
 var userController = {
     addUser: function (req, res, next) {
         try {
-            var schema = getmodule('schemas/signup');
+            var schema = getmodule('schemas/user');
             if (schema) {
                 schema.validate(req.body);
             }
@@ -14,7 +14,7 @@ var userController = {
     },
     signIn: function (req, res, next) {
         try {
-            var schema = getmodule('schemas/user');
+            var schema = getmodule('schemas/signin');
             if (schema) {
                 schema.validate(req.body);
             }
@@ -38,7 +38,7 @@ var userController = {
             if(req.body.user_id != req.user.user_id) {
                 res.status(403).json({message: "You can only edit your user."});
             } else {
-                service.updateUser(req, res, next);                
+                service.updateUser(req, res, next);
             }
         } catch(err) {
             res.status(400).json(err);

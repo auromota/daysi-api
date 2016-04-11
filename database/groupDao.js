@@ -13,7 +13,11 @@ var groupDao = {
     findAll: function(callback) {
         db.get(function(err, connection) {
             if(err) return callback(err);
-            connection.query('SELECT * FROM groups WHERE privacy = 0', function(err, rows) {
+            var query = 'SELECT u.user_id, u.email, u.password, u.name as creator, u.gender, u.push_id, ' +
+                        'u.platform, u.photo, u.username, u.photo_privacy, u.name_privacy, u.email_privacy, ' +
+                        'g.group_id, g.name, g.description, g.creation_date ' +
+                        'FROM groups g JOIN users u ON u.user_id = g.group_creator WHERE g.privacy = 0';
+            connection.query(query, function(err, rows) {
                 connection.release();
                 callback(err, rows);
             });
@@ -22,7 +26,11 @@ var groupDao = {
     findGroup: function(group_id, callback) {
         db.get(function(err, connection) {
             if(err) return callback(err);
-            connection.query('SELECT * FROM groups WHERE group_id = ?', [group_id], function(err, rows) {
+            var query = 'SELECT u.user_id, u.email, u.password, u.name as creator, u.gender, u.push_id, ' +
+                        'u.platform, u.photo, u.username, u.photo_privacy, u.name_privacy, u.email_privacy, ' +
+                        'g.group_id, g.name, g.description, g.creation_date ' +
+                        'FROM groups g JOIN users u ON u.user_id = g.group_creator WHERE g.group_id = ?';
+            connection.query(query, [group_id], function(err, rows) {
                 connection.release();
                 callback(err, rows);
             });

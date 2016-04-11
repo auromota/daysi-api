@@ -1,5 +1,4 @@
 var express = require('express');
-var sync = require('synchronize');
 var config = getmodule('config');
 var groupDao = getmodule('database/groupDao');
 var userDao = getmodule('database/userDao');
@@ -32,16 +31,26 @@ var groupService = {
         groupDao.findAll(function(err, rows) {
             if(err) res.status(500).json(err);
             else {
-                try {
-                    sync.fiber(function() {
-                        rows.forEach(function(group) {
-                            group.group_creator = groupService.findGroupOwner(group.group_creator);
-                        })
-                        res.status(200).json(rows);
-                    });
-                } catch (err) {
-                    res.status(500).json(rows);
-                }
+                var groups = [];
+                rows.forEach(function(row, index) {
+                    var user = {
+                        user_id : row.user_id,
+                        username : row.username,
+                        gender : row.gender
+                    };
+                    if(!row.photo_privacy) user.photo = row.photo;
+                    if(!row.email_privacy) user.email = row.email;
+                    if(!row.name_privacy) user.name = row.creator;
+                    var group = {
+                        group_id : row.group_id,
+                        name : row.name,
+                        description : row.description,
+                        creation_date : row.creation_date,
+                        group_creator : user
+                    }
+                    groups[index] = group;
+                });
+                res.status(200).json(groups);
             }
         });
     },
@@ -50,28 +59,25 @@ var groupService = {
         groupDao.findGroup(group_id, function(err, rows) {
             if(err) res.status(500).json(err);
             else {
-                var group = rows[0];
-                try {
-                    sync.fiber(function() {
-                        group.group_creator = groupService.findGroupOwner(group.group_creator);
-                        res.status(200).json(group);
-                    })
-                } catch (err) {
-                    res.status(500).json(rows);
-                }
+                var row = rows[0];
+                var user = {
+                    user_id : row.user_id,
+                    username : row.username,
+                    gender : row.gender
+                };
+                if(!row.photo_privacy) user.photo = row.photo;
+                if(!row.email_privacy) user.email = row.email;
+                if(!row.name_privacy) user.name = row.creator;
+                res.status(200).json({
+                    group_id : row.group_id,
+                    name : row.name,
+                    description : row.description,
+                    creation_date : row.creation_date,
+                    group_creator : user
+                });
             }
         });
-    },
-    findGroupOwner: function(group_creator, callback) {
-        userDao.findUser(group_creator, function(err, rows) {
-            if(err) callback(err);
-            else {
-                callback(null, rows[0]);
-            }
-        })
     }
 };
-
-sync(groupService, 'findGroupOwner');
 
 module.exports = groupService;
