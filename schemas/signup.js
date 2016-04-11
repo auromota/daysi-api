@@ -35,14 +35,16 @@ var schema = createSchema({
            maxLength: 30
        },
        photo_privacy: {
-           type: 'integer',
-           required: true,
-           maximum: 1
+           type: 'boolean',
+           required: true
        },
        name_privacy: {
-           type: 'integer',
-           required: true,
-           maximum: 1
+           type: 'boolean',
+           required: true
+       },
+       email_privacy {
+           type: 'boolean',
+           required: true
        }
     }
 });

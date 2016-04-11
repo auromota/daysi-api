@@ -48,7 +48,19 @@ var users = {
         var user_id = req.params.user_id;
         dao.findUser(user_id, function(err, rows) {
             if(err) res.status(500).json(err);
-            else res.status(200).json(rows[0]);
+            else {
+                var user = rows[0];
+                if(user) {
+                    if(req.user.user_id != req.params.user_id) {
+                        if(user.name_privacy) delete user.name;
+                        if(user.email_privacy) delete user.email;
+                        if(user.photo_privacy) delete user.photo;
+                    }
+                    res.status(200).json(rows[0]);
+                } else {
+                    res.status(200).json();
+                }
+            }
         });
     }
 };
