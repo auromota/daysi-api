@@ -5,23 +5,28 @@ var schema = createSchema({
     properties: {
         email: {
             type: 'string',
-            required: true,
+            required: false,
             format: 'email'
        },
        password: {
            type: 'string',
-           required: true,
+           required: false,
+           minLength: 6
+       },
+       oldPassword: {
+           type: 'string',
+           required: false,
            minLength: 6
        },
        name: {
            type: 'string',
-           required: true,
+           required: false,
            minLength: 1,
            maxLength: 80
        },
        gender: {
            type: 'integer',
-           required: true,
+           required: false,
            maximum: 1
        },
        photo: {
@@ -30,20 +35,27 @@ var schema = createSchema({
        },
        username: {
            type: 'string',
-           required: true,
+           required: false,
            minLength: 3,
            maxLength: 30
        },
        photo_privacy: {
-           type: 'boolean',
-           required: true
+           type: 'integer',
+           maximum: 1,
+           required: false
        },
        name_privacy: {
-           type: 'boolean',
-           required: true
+           type: 'integer',
+           maximum: 1,
+           required: false
        },
-       email_privacy {
-           type: 'boolean',
+       email_privacy: {
+           type: 'integer',
+           maximum: 1,
+           required: false
+       },
+       user_id: {
+           type: 'integer',
            required: true
        }
     }

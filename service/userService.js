@@ -41,7 +41,16 @@ var users = {
     findAll: function(req, res, next) {
         dao.findAll(function(err, rows) {
             if(err) res.status(500).json(err);
-            else res.status(200).json(rows);
+            else {
+                rows.forEach(function(user) {
+                    if(req.user.user_id != user.user_id) {
+                        if(user.name_privacy) delete user.name;
+                        if(user.email_privacy) delete user.email;
+                        if(user.photo_privacy) delete user.photo;
+                    }
+                });
+                res.status(200).json(rows);
+            }
         });
     },
     findUser: function(req, res, next) {
@@ -59,6 +68,30 @@ var users = {
                     res.status(200).json(rows[0]);
                 } else {
                     res.status(200).json();
+                }
+            }
+        });
+    },
+    updateUser: function(req, res, next) {
+        var user = req.body;
+        dao.findUser(user.user_id, function(err, rows) {
+            if(err) res.status(500).json(err);
+            else {
+                var oldUser = rows[0];
+                if(user.password) {
+                    if(user.oldPassword) {
+                        if(bcrypt.compareSync(user.oldPassword, oldUser.password)) {
+                            user.password = bcrypt.hashSync(user.password);
+                            dao.updateUser(user, function(err, rows) {
+                                if(err) res.status(500).json(err);
+                                else res.status(200).json(rows);
+                            })
+                        } else {
+                            res.status(403).json({message: 'Invalid password.'});
+                        }
+                    } else {
+                        res.status(500).json({message: 'Old password is required.'});
+                    }
                 }
             }
         });

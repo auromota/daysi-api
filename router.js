@@ -8,6 +8,7 @@ router.route('/signin').post(userController.signIn);
 router.route('/users').post(userController.addUser);
 router.route('/users').get(auth.isAuthorized, userController.findAll);
 router.route('/users/:user_id').get(auth.isAuthorized, userController.findUser);
+router.route('/users').put(auth.isAuthorized, userController.updateUser)
 router.route('/groups').post(auth.isAuthorized, groupController.addGroup);
 router.route('/groups').get(auth.isAuthorized, groupController.findAll);
 router.route('/groups/:group_id').get(auth.isAuthorized, groupController.findGroup);
