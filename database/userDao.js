@@ -40,13 +40,13 @@ var userDao = {
     updateUser: function(user, callback) {
         db.get(function(err, connection) {
             if(err) return callback(err);
-            connection.query(userDao.getUpdateQueryString(user, connection), function(err, rows) {
+            connection.query(userDao.getUpdateQueryString(user), function(err, rows) {
                 connection.release();
                 callback(err, rows);
             });
         })
     },
-    getUpdateQueryString: function(user, connection) {
+    getUpdateQueryString: function(user) {
         var query = 'UPDATE `users` SET ';
         if(user.email) query += '`email` = \'' + user.email + '\', ';
         if(user.password) query += '`password` = \'' + user.password + '\', ';
