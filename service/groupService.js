@@ -3,6 +3,7 @@ var sync = require('synchronize');
 var config = getmodule('config');
 var groupDao = getmodule('database/groupDao');
 var userDao = getmodule('database/userDao');
+var memberDao = getmodule('database/memberDao');
 
 var groupService = {
     addGroup: function(req, res, next) {
@@ -12,7 +13,19 @@ var groupService = {
         group.creation_date = new Date();
         groupDao.addGroup(group, function(err, rows) {
             if(err) res.status(500).json(err);
-            else res.status(200).json(rows);
+            else {
+                var member = {
+                    user_id : user.user_id,
+                    group_id : rows.insertId,
+                    joining_date : new Date(),
+                    is_admin : true,
+                    was_admin : true
+                };
+                memberDao.insertMember(member, function(err, rows) {
+                    if(err) res.status(500).json(err);
+                    else res.status(200).json(rows);
+                });
+            }
         });
     },
     findAll: function(req, res, next) {
