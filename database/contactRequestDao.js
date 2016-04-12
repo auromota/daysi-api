@@ -18,6 +18,15 @@ var contactRequestDao = {
                 callback(err, rows);
             });
         });
+    },
+    selectRequests: function(user_id, callback) {
+        db.get(function(err, connection) {
+            if(err) return callback(err);
+            connection.query('SELECT * FROM contact_requests WHERE user_id = ? OR requested_user_id = ?', [user_id, user_id], function(err, rows) {
+                connection.release();
+                callback(err, rows);
+            });
+        })
     }
 }
 
