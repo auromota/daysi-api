@@ -9,7 +9,7 @@ var groupController = {
             }
             service.addGroup(req, res, next);
         } catch(err) {
-            res.status(400).json(err);
+            res.status(400).json(err+'');
         }
     },
     findAll: function(req, res, next) {
@@ -26,7 +26,7 @@ var groupController = {
             }
             service.updateGroup(req, res, next);
         } catch(err) {
-            res.status(400).json(err);
+            res.status(400).json(err+'');
         }
     }
 };

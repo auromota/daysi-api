@@ -15,10 +15,11 @@ var schema = createSchema({
             maxLength: 256
         },
         privacy: {
-            type: 'boolean',
-            required: false
+            type: 'integer',
+            required: false,
+            maximum: 1
         },
-        group_id: {
+        groupId: {
             type: 'integer',
             required: true
         }

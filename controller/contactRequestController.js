@@ -7,24 +7,28 @@ var contactRequestController = {
             if (schema) {
                 schema.validate(req.body);
             }
-            if (req.user.user_id == req.body.requested_user_id) {
+            if (req.user.id == req.body.userId) {
                 res.status(400).json({message: 'You can not make a contact request to yourself.'});
             } else {
                 service.contactRequest(req, res, next);
             }
         } catch(err) {
-            res.status(400).json(err);
+            res.status(400).json(err+'');
         }
     },
     acceptRequest: function(req, res, next) {
         try {
-            var schema = getmodule('schemas/acceptRequest');
+            var schema = getmodule('schemas/contactRequest');
             if (schema) {
                 schema.validate(req.body);
             }
-            service.acceptRequest(req, res, next);
+            if (req.user.id == req.body.userId) {
+                res.status(400).json({message: 'You can not accept a contact request from yourself.'});
+            } else {
+                service.acceptRequest(req, res, next);
+            }
         } catch(err) {
-            res.status(400).json(err);
+            res.status(400).json(err+'');
         }
     }
 };

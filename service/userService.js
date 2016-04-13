@@ -7,66 +7,79 @@ var dao = getmodule('database/userDao');
 var users = {
     signUp: function(req, res, next) {
         var user = req.body;
-        user.sign_date = new Date();
+        user.signDate = new Date().getTime();
         user.password = bcrypt.hashSync(user.password);
-        dao.addUser(user, function(err, rows) {
-            if(err) res.status(500).json(err);
-            else res.status(200).json(rows);
+        dao.saveUser(user, function(err, user) {
+            if(err) res.status(err.statusCode).json(err);
+            else {
+                delete user.password;
+                res.status(200).json(user);
+            }
         });
     },
     signIn: function(req, res, next) {
         var credentials = req.body;
-        dao.findUserByUsername(credentials.username, function(err, rows) {
-            if(err) res.status(500).json(err);
+        dao.findByUsername(credentials.username, function(err, response) {
+            if(err) res.status(err.statusCode).json(err);
             else {
-                if(rows && rows.length && bcrypt.compareSync(credentials.password, rows[0].password)) {
-                    var user = rows[0];
-                    delete user.password;
-                    delete user.photo;
-                    var token = jwt.sign(user, config.jwt_secret, {
-                        expiresIn: 86400
-                    });
-                    res.status(200).json({
-                        type: true,
-                        data: user,
-                        token: token
-                    });
+                if(response && response.length) {
+                    if(bcrypt.compareSync(credentials.password, response[0].password)) {
+                        var user = response[0];
+                        delete user.password;
+                        delete user.photo;
+                        var token = jwt.sign(user, config.jwt_secret, {
+                            expiresIn: 86400
+                        });
+                        res.status(200).json({
+                            status: true,
+                            data: user,
+                            token: token
+                        });
+                    } else {
+                        res.status(403).json({
+                            status: false,
+                            message: 'Password is wrong.'
+                        });
+                    }
                 } else {
-                    res.status(403).json({
-                        type: false
-                    });
+                    res.status(400).json({
+                        status: false,
+                        message: 'Username not found'
+                    })
                 }
             }
         });
     },
     findAll: function(req, res, next) {
-        dao.findAll(function(err, rows) {
-            if(err) res.status(500).json(err);
+        dao.findAll(function(err, nodes) {
+            if(err) res.status(err.statusCode).json(err);
             else {
-                rows.forEach(function(user) {
-                    if(req.user.user_id != user.user_id) {
-                        if(user.name_privacy) delete user.name;
-                        if(user.email_privacy) delete user.email;
-                        if(user.photo_privacy) delete user.photo;
+                nodes.forEach(function(user) {
+                    if(req.user.id != user.id) {
+                        if(user.namePrivacy) delete user.name;
+                        if(user.emailPrivacy) delete user.email;
+                        if(user.photoPrivacy) delete user.photo;
                     }
+                    delete user.password;
                 });
-                res.status(200).json(rows);
+                res.status(200).json(nodes);
             }
         });
     },
     findUser: function(req, res, next) {
-        var user_id = req.params.user_id;
-        dao.findUser(user_id, function(err, rows) {
-            if(err) res.status(500).json(err);
+        var username = req.params.username;
+        dao.findByUsername(username, function(err, response) {
+            if(err) res.status(err.statusCode).json(err);
             else {
-                var user = rows[0];
-                if(user) {
-                    if(req.user.user_id != req.params.user_id) {
-                        if(user.name_privacy) delete user.name;
-                        if(user.email_privacy) delete user.email;
-                        if(user.photo_privacy) delete user.photo;
+                if(response && response.length) {
+                    var user = response[0];
+                    if(req.user.id != user.id) {
+                        if(user.namePrivacy) delete user.name;
+                        if(user.emailPrivacy) delete user.email;
+                        if(user.photoPrivacy) delete user.photo;
                     }
-                    res.status(200).json(rows[0]);
+                    delete user.password;
+                    res.status(200).json(user);
                 } else {
                     res.status(200).json();
                 }
@@ -75,29 +88,43 @@ var users = {
     },
     updateUser: function(req, res, next) {
         var user = req.body;
-        dao.findUser(user.user_id, function(err, rows) {
-            if(err) res.status(500).json(err);
+        var userWhoSent = req.user;
+        dao.findByUsername(userWhoSent.username, function(err, response) {
+            if(err) res.status(err.statusCode).json(err);
             else {
-                var oldUser = rows[0];
-                if(user.password) {
-                    if(user.oldPassword) {
-                        if(bcrypt.compareSync(user.oldPassword, oldUser.password)) {
-                            user.password = bcrypt.hashSync(user.password);
-                            dao.updateUser(user, function(err, rows) {
-                                if(err) res.status(500).json(err);
-                                else res.status(200).json(rows);
-                            })
+                if(response && response.length) {
+                    var oldUser = response[0];
+                    user.id = oldUser.id;
+                    var array = Object.keys(oldUser);
+                    if(user.password) {
+                        if(user.oldPassword) {
+                            if(bcrypt.compareSync(user.oldPassword, oldUser.password)) {
+                                user.password = bcrypt.hashSync(user.password);
+                                delete user.oldPassword;
+                                array.forEach(function(key) {
+                                    if(user[key] == undefined) user[key] = oldUser[key];
+                                });
+                                dao.updateUser(user, function(err, response) {
+                                    if(err) res.status(err.statusCode).json(err);
+                                    else res.status(200).json(response);
+                                })
+                            } else {
+                                res.status(403).json({status: false, message: 'Invalid password.'});
+                            }
                         } else {
-                            res.status(403).json({message: 'Invalid password.'});
+                            res.status(500).json({status: false, message: 'Old password is required.'});
                         }
                     } else {
-                        res.status(500).json({message: 'Old password is required.'});
+                        array.forEach(function(key) {
+                            if(!user[key]) user[key] = oldUser[key];
+                        });
+                        dao.updateUser(user, function(err, response) {
+                            if(err) res.status(err.statusCode).json(err);
+                            else res.status(200).json(response);
+                        });
                     }
                 } else {
-                    dao.updateUser(user, function(err, rows) {
-                        if(err) res.status(500).json(err);
-                        else res.status(200).json(rows);
-                    });
+                    res.status(400).json({status: false, message: 'Username not found.'});
                 }
             }
         });

@@ -9,7 +9,7 @@ var userController = {
             }
             service.signUp(req, res, next);
         } catch(err) {
-            res.status(400).json(err);
+            res.status(400).json(err+'');
         }
     },
     signIn: function (req, res, next) {
@@ -20,7 +20,7 @@ var userController = {
             }
             service.signIn(req, res, next);
         } catch(err) {
-            res.status(400).json(err);
+            res.status(400).json(err+'');
         }
     },
     findAll: function(req, res, next) {
@@ -41,7 +41,7 @@ var userController = {
                 service.updateUser(req, res, next);
             }
         } catch(err) {
-            res.status(400).json(err);
+            res.status(400).json(err+'');
         }
     }
 };

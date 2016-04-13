@@ -1,40 +1,54 @@
 var express = require('express');
 var contactRequestDao = getmodule('database/contactRequestDao');
-var contactUtil = getmodule('util/contactUtil');
 
 var contactRequestService = {
     contactRequest: function(req, res, next) {
         var request = {
-            user_id : req.user.user_id,
-            requested_user_id : req.body.requested_user_id,
-            date : new Date()
+            userId : req.user.id,
+            requestedUserId : req.body.userId,
+            date : new Date().getTime()
         }
-        contactUtil.canRequest(req.user.user_id, req.body.requested_user_id, function(err, canRequest) {
-            if(err) res.status(500).json(err);
+        contactRequestDao.getRelationships(request.userId, request.requestedUserId, function(err, relationship) {
+            if(err) res.status(err.statusCode).json(err);
             else {
-                if(canRequest) {
-                    contactRequestDao.addRequest(request, function(err, rows) {
-                        if(err) res.status(500).json(err);
-                        else res.status(200).json(rows);
+                if(!relationship.length) {
+                    contactRequestDao.addRequest(request, function(err, relationship) {
+                        if(err) res.status(err.statusCode).json(err);
+                        else res.status(200).json(relationship);
                     });
                 } else {
-                    res.status(400).json({message: 'There is already an existing request or you are already contacts.'});
+                    res.status(400).json({status: false, message: 'There is already an existing request or you are already contacts.'});
                 }
             }
         });
     },
     acceptRequest: function(req, res, next) {
         var request = {
-            user_id : req.body.user_id,
-            requested_user_id : req.user.user_id
+            userId : req.body.userId,
+            requestedUserId : req.user.id
         };
-        contactRequestDao.deleteRequest(request, function(err, rows) {
-            if(err) res.status(500).json(err);
+        contactRequestDao.getRelationships(request.userId, request.requestedUserId, function(err, relationships) {
+            if(err) res.status(err.statusCode).json(err);
             else {
-                contactUtil.addContacts(req.body.user_id, req.user.user_id, function(err, rows) {
-                    if(err) res.status(500).json(err);
-                    else res.status(200).json(rows);
-                });
+                if(relationships.length) {
+                    var isContact = false;
+                    var canAccept = false;
+                    relationships.forEach(function(rel) {
+                        if(rel.type == 'IS_CONTACT') isContact = true;
+                        else if(rel.type == 'REQUESTED_CONTACT' && rel.start == request.userId) canAccept = true;
+                    });
+                    if(!isContact && canAccept) {
+                        contactRequestDao.acceptRequest(request, function(err, response) {
+                            if(err) res.status(err.statusCode).json(err);
+                            else res.status(200).json(response);
+                        });
+                    } else {
+                        if(isContact) res.status(400).json({status: false, message: 'You are already contacts.'});
+                        else res.status(400).json({status: false, message: 'You can not accept a request you have sent.'});
+                    }
+                } else {
+                    res.status(400).json({status: false, message: 'There is no request from this user.'})
+                }
             }
         });
     }

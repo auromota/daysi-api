@@ -1,52 +1,77 @@
 var db = getmodule('database/connection');
 
 var groupDao = {
-    addGroup: function(group, callback) {
-        db.get(function(err, connection) {
-            if(err) return callback(err);
-            connection.query('INSERT INTO groups SET ?', group, function(err, rows) {
-                connection.release();
-                callback(err, rows);
-            });
+    addGroup: function(group, user, callback) {
+        var tx = db.batch();
+        var g = tx.save(group);
+        tx.label([g], 'group');
+        tx.relate(user, 'IS_CREATOR', g);
+        tx.relate(user, 'IS_MEMBER', g, {since: new Date().getTime(), isAdmin: true});
+        tx.commit(function(err, results){
+            callback(err, results[g]);
         });
     },
-    findAll: function(callback) {
-        db.get(function(err, connection) {
-            if(err) return callback(err);
-            var query = 'SELECT u.user_id, u.email, u.password, u.name as creator, u.gender, u.push_id, ' +
-                        'u.platform, u.photo, u.username, u.photo_privacy, u.name_privacy, u.email_privacy, ' +
-                        'g.group_id, g.name, g.description, g.creation_date ' +
-                        'FROM groups g JOIN users u ON u.user_id = g.group_creator WHERE g.privacy = 0';
-            connection.query(query, function(err, rows) {
-                connection.release();
-                callback(err, rows);
-            });
+    findAll: function(username, callback) {
+        db.nodesWithLabel('group', function(err, nodes) {
+            if(err) callback(err);
+            else {
+                db.query('match(user{username:{username}})-[r:IS_MEMBER]->(group) return r', {username: username}, function(err, rels) {
+                    var groups = [];
+                    var isMember = false;
+                    nodes.forEach(function(node) {
+                        isMember = false;
+                        if(node.privacy) {
+                            rels.forEach(function(rel) {
+                                if(rel.end == node.id) isMember = true;
+                            })
+                            if(isMember) groups.push(node);
+                        } else {
+                            groups.push(node);
+                        }
+                    })
+                    callback(err, groups);
+                });
+            }
         });
     },
-    findGroup: function(group_id, callback) {
-        db.get(function(err, connection) {
-            if(err) return callback(err);
-            var query = 'SELECT u.user_id, u.email, u.password, u.name as creator, u.gender, u.push_id, ' +
-                        'u.platform, u.photo, u.username, u.photo_privacy, u.name_privacy, u.email_privacy, ' +
-                        'g.group_id, g.name, g.description, g.creation_date ' +
-                        'FROM groups g JOIN users u ON u.user_id = g.group_creator ' +
-                        'WHERE g.group_id = ?';
-            connection.query(query, [group_id], function(err, rows) {
-                connection.release();
-                callback(err, rows);
+    findGroup: function(groupId, callback) {
+        db.read(groupId, function(err, node) {
+            if(err) callback(err);
+            db.readLabels(groupId, function(err, results) {
+                if(err) callback(err);
+                else {
+                    if(results.indexOf('group') > -1) {
+                        db.relationships(groupId, 'in', 'IS_MEMBER', function(err, relationships) {
+                            if(err) callback(err);
+                            else {
+                                if(relationships && relationships.length) {
+                                    callback(err, {group: node, members: relationships})
+                                } else {
+                                    callback(err, {group: node, members: []});
+                                }
+                            }
+                        });
+                    } else {
+                        callback(err, undefined);
+                    }
+                }
             });
         });
     },
     updateGroup: function(group, callback) {
-        db.get(function(err, connection) {
-            if(err) return callback(err);
-            var group_id = group.group_id;
-            delete group.group_id;
-            connection.query('UPDATE groups SET ? WHERE group_id = ?', [group, group_id], function(err, rows) {
-                connection.release();
-                callback(err, rows);
-            });
+        db.save(group, function(err, result) {
+            callback(err, result);
         });
+    },
+    findAdmins: function(groupId, username, callback) {
+        var query = 'MATCH(user:user{username: {username}})-[r:IS_MEMBER{isAdmin:true}]->(group:group) '+
+                        'where ID(group) = {groupId} return r';
+        db.cypherQuery(query, {
+            username: username,
+            groupId: groupId
+        }, function(err, result) {
+            callback(err, result);
+        })
     }
 }
 
