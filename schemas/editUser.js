@@ -33,32 +33,23 @@ var schema = createSchema({
            type: 'string',
            required: false
        },
-       username: {
-           type: 'string',
-           required: false,
-           minLength: 3,
-           maxLength: 30
-       },
-       photo_privacy: {
+       photoPrivacy: {
            type: 'integer',
            maximum: 1,
            required: false
        },
-       name_privacy: {
+       namePrivacy: {
            type: 'integer',
            maximum: 1,
            required: false
        },
-       email_privacy: {
+       emailPrivacy: {
            type: 'integer',
            maximum: 1,
            required: false
-       },
-       user_id: {
-           type: 'integer',
-           required: true
        }
-    }
+   },
+   additionalProperties: false
 });
 
 module.exports = schema;

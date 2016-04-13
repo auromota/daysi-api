@@ -7,7 +7,8 @@ var schema = createSchema({
             type: 'integer',
             required: true
         }
-    }
+    },
+    additionalProperties: false
 });
 
 module.exports = schema;

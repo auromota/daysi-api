@@ -15,10 +15,12 @@ var schema = createSchema({
             maxLength: 256
         },
         privacy: {
-            type: 'boolean',
+            type: 'integer',
+            maximum: 1,
             required: true
         }
-    }
+    },
+    additionalProperties: false
 });
 
 module.exports = schema;

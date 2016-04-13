@@ -14,7 +14,8 @@ var schema = createSchema({
             required: true,
             minLength: 6
         }
-    }
+    },
+    additionalProperties: false
 });
 
 module.exports = schema;

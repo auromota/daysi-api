@@ -34,20 +34,20 @@ var schema = createSchema({
            minLength: 3,
            maxLength: 30
        },
-       photo_privacy: {
+       photoPrivacy: {
            type: 'integer',
            maximum: 1,
-           required: false
+           required: true
        },
-       name_privacy: {
+       namePrivacy: {
            type: 'integer',
            maximum: 1,
-           required: false
+           required: true
        },
-       email_privacy: {
+       emailPrivacy: {
            type: 'integer',
            maximum: 1,
-           required: false
+           required: true
        },
     }
 });
