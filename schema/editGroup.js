@@ -14,11 +14,6 @@ var schema = createSchema({
             required: false,
             maxLength: 256
         },
-        privacy: {
-            type: 'integer',
-            required: false,
-            maximum: 1
-        },
         groupId: {
             type: 'string',
             required: true

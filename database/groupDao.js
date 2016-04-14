@@ -11,53 +11,35 @@ var groupDao = {
             callback(err, results[g]);
         });
     },
-    findAll: function(username, callback) {
-        db.nodesWithLabel('group', function(err, nodes) {
-            if(err) callback(err);
-            else {
-                db.query('match(user{username:{username}})-[r:IS_MEMBER]->(group) return r', {username: username}, function(err, rels) {
-                    var groups = [];
-                    var isMember = false;
-                    nodes.forEach(function(node) {
-                        isMember = false;
-                        if(node.privacy) {
-                            rels.forEach(function(rel) {
-                                if(rel.end == node.id) isMember = true;
-                            })
-                            if(isMember) groups.push(node);
-                        } else {
-                            groups.push(node);
-                        }
-                    })
-                    callback(err, groups);
-                });
-            }
+    findGroupsByUser: function(username, callback) {
+        db.query('MATCH(user{username:{username}})-[:IS_MEMBER]->(group:group) return group', {username: username}, function(err, groups) {
+            callback(err, groups);
+        });
+    },
+    find: function(query, callback) {
+        db.query('MATCH(group:group) WHERE group.name =~ \'(?i).*'+query.query+'.*\' RETURN group SKIP {skip} LIMIT {limit}', query, function(err, results) {
+            callback(err, results);
         });
     },
     findGroup: function(groupId, callback) {
         db.find({groupId: groupId}, 'group', function(err, results) {
-            if(err) callback(err);
-            else {
-                if(results && results.length) {
-                    db.relationships(results[0].id, 'in', 'IS_MEMBER', function(err, relationships) {
-                        if(err) callback(err);
-                        else {
-                            if(relationships && relationships.length) {
-                                callback(err, {group: results[0], members: relationships})
-                            } else {
-                                callback(err, {group: results[0], members: []});
-                            }
-                        }
-                    });
-                } else {
-                    callback(err, undefined);
-                }
-            }
+            callback(err, results);
         });
     },
     updateGroup: function(group, callback) {
         db.save(group, function(err, result) {
             callback(err, result);
+        });
+    },
+    findMembersForGroup: function(count, type, group, callback) {
+        var query = 'START g = node({id}) MATCH(g)-[:'+type+']-(u:user) '+
+                    'RETURN DISTINCT u.username as username, u.photo as photo, '+
+                    'u.photoPrivacy as photoPrivacy, u.name as name, u.namePrivacy as namePrivacy '+
+                    'LIMIT {count}';
+        db.query(query, {
+            id: group.id, count: count
+        }, function(err, members) {
+            callback(err, members);
         });
     }
 }

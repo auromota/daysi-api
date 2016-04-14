@@ -13,11 +13,6 @@ var schema = createSchema({
             type: 'string',
             required: false,
             maxLength: 256
-        },
-        privacy: {
-            type: 'integer',
-            maximum: 1,
-            required: true
         }
     },
     additionalProperties: false
