@@ -1,5 +1,4 @@
 var express = require('express');
-var config = getmodule('config');
 var groupDao = getmodule('database/groupDao');
 
 var groupService = {

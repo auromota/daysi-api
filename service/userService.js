@@ -1,7 +1,6 @@
 var express = require('express');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('jsonwebtoken');
-var config = getmodule('config');
 var dao = getmodule('database/userDao');
 
 var users = {
@@ -27,7 +26,7 @@ var users = {
                         var user = response[0];
                         delete user.password;
                         delete user.photo;
-                        var token = jwt.sign(user, config.jwt_secret, {
+                        var token = jwt.sign(user, process.env.JWT_PASS, {
                             expiresIn: 86400
                         });
                         res.status(200).json({
