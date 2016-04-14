@@ -3,7 +3,7 @@ var service = getmodule('service/groupService');
 var groupController = {
     addGroup: function (req, res, next) {
         try {
-            var schema = getmodule('schemas/group');
+            var schema = getmodule('schema/group');
             if (schema) {
                 schema.validate(req.body);
             }
@@ -20,7 +20,7 @@ var groupController = {
     },
     updateGroup: function(req, res, next) {
         try {
-            var schema = getmodule('schemas/editGroup');
+            var schema = getmodule('schema/editGroup');
             if(schema) {
                 schema.validate(req.body);
             }

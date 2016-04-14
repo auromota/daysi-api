@@ -3,7 +3,7 @@ var service = getmodule('service/userService');
 var userController = {
     addUser: function (req, res, next) {
         try {
-            var schema = getmodule('schemas/user');
+            var schema = getmodule('schema/user');
             if (schema) {
                 schema.validate(req.body);
             }
@@ -14,7 +14,7 @@ var userController = {
     },
     signIn: function (req, res, next) {
         try {
-            var schema = getmodule('schemas/signin');
+            var schema = getmodule('schema/signin');
             if (schema) {
                 schema.validate(req.body);
             }
@@ -31,7 +31,7 @@ var userController = {
     },
     updateUser: function(req, res, next) {
         try {
-            var schema = getmodule('schemas/editUser');
+            var schema = getmodule('schema/editUser');
             if (schema) {
                 schema.validate(req.body);
             }

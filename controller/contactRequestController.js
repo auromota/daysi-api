@@ -3,7 +3,7 @@ var service = getmodule('service/contactRequestService');
 var contactRequestController = {
     contactRequest: function (req, res, next) {
         try {
-            var schema = getmodule('schemas/contactRequest');
+            var schema = getmodule('schema/contactRequest');
             if (schema) {
                 schema.validate(req.body);
             }
@@ -18,7 +18,7 @@ var contactRequestController = {
     },
     acceptRequest: function(req, res, next) {
         try {
-            var schema = getmodule('schemas/contactRequest');
+            var schema = getmodule('schema/contactRequest');
             if (schema) {
                 schema.validate(req.body);
             }
