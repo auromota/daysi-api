@@ -59,16 +59,6 @@ var groupDao = {
         db.save(group, function(err, result) {
             callback(err, result);
         });
-    },
-    findAdmins: function(groupId, username, callback) {
-        var query = 'MATCH(user:user{username: {username}})-[r:IS_MEMBER{isAdmin:true}]->(group:group) '+
-                        'where ID(group) = {groupId} return r';
-        db.cypherQuery(query, {
-            username: username,
-            groupId: groupId
-        }, function(err, result) {
-            callback(err, result);
-        })
     }
 }
 
