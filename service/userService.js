@@ -111,7 +111,7 @@ var users = {
                                 res.status(403).json({status: false, message: 'Invalid password.'});
                             }
                         } else {
-                            res.status(500).json({status: false, message: 'Old password is required.'});
+                            res.status(400).json({status: false, message: 'Old password is required.'});
                         }
                     } else {
                         array.forEach(function(key) {
