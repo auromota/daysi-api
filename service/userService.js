@@ -18,7 +18,7 @@ var users = {
     },
     signIn: function(req, res, next) {
         var credentials = req.body;
-        dao.findByUsername(credentials.username, function(err, response) {
+        dao.findByUsernameOrEmail(credentials.credential, function(err, response) {
             if(err) res.status(err.statusCode).json(err);
             else {
                 if(response && response.length) {
@@ -43,7 +43,7 @@ var users = {
                 } else {
                     res.status(400).json({
                         status: false,
-                        message: 'Username not found'
+                        message: 'User not found.'
                     })
                 }
             }

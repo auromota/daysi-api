@@ -32,7 +32,8 @@ var schema = createSchema({
            type: 'string',
            required: true,
            minLength: 3,
-           maxLength: 30
+           maxLength: 30,
+           pattern: '^[a-zA-Z0-9._]*$'
        },
        photoPrivacy: {
            type: 'integer',

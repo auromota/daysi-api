@@ -11,6 +11,11 @@ var userDao = {
             callback(err, results);
         });
     },
+    findByUsernameOrEmail : function(credential, callback) {
+        db.find({username: credential, email: credential}, true, 'user', function(err, results) {
+            callback(err, results);
+        });
+    },
     findAll : function(callback) {
         db.nodesWithLabel('user', function(err, nodes) {
             callback(err, nodes);

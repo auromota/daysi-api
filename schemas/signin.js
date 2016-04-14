@@ -3,7 +3,7 @@ var createSchema = require('json-gate').createSchema;
 var schema = createSchema({
     type: 'object',
     properties: {
-        username: {
+        credential: {
             type: 'string',
             required: true,
             minLength: 3,
