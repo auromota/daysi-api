@@ -13,7 +13,15 @@ var groupController = {
         }
     },
     findAll: function(req, res, next) {
-        service.findAll(req, res, next);
+        try {
+            var schema = getmodule('schema/query/findGroups');
+            if (schema) {
+                schema.validate(req.query);
+            }
+            service.findAll(req, res, next);
+        } catch(err) {
+            res.status(400).json(err+'');
+        }
     },
     findGroup: function(req, res, next) {
         service.findGroup(req, res, next);
