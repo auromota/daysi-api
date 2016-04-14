@@ -36,6 +36,9 @@ var groupController = {
         } catch(err) {
             res.status(400).json(err+'');
         }
+    },
+    removeGroup: function(req, res, next) {
+        service.removeGroup(req, res,next);
     }
 };
 

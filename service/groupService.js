@@ -34,7 +34,7 @@ var groupService = {
                 if(results && results.length) {
                     var group = results[0];
                     groupDao.findMembersForGroup(5, 'IS_MEMBER', group, function(err, results) {
-                        if(err) res.status(500).json(err);
+                        if(err) res.status(err.statusCode).json(err);
                         else {
                             results.forEach(function(member) {
                                 if(member.photoPrivacy) delete member.photo;
@@ -76,7 +76,28 @@ var groupService = {
                         res.status(403).json({status: false, message: 'Only administrators can edit groups.'});
                     }
                 } else {
-                    res.status(400).json({status: false, message: 'Group can\'t be found.'})
+                    res.status(400).json({status: false, message: 'Group can not be found.'})
+                }
+            }
+        });
+    },
+    removeGroup: function(req, res, next) {
+        var groupId = req.params.groupId;
+        var username = req.user.username;
+        groupDao.findMemberRelationship(username, groupId, function(err, relationship) {
+            if(err) res.status(err.statusCode).json(err);
+            else {
+                if(relationship && relationship.length) {
+                    if(relationship[0].properties.isAdmin) {
+                        groupDao.removeGroup(groupId, function(err, response) {
+                            if(err) res.status(err.statusCode).json(err);
+                            else res.status(200).json(response);
+                        });
+                    } else {
+                        res.status(403).json({status: false, message: 'Only administrators can remove groups.'});
+                    }
+                } else {
+                    res.status(403).json({status: false, message: 'You are not member of this group.'});
                 }
             }
         });

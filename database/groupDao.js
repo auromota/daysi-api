@@ -16,8 +16,10 @@ var groupDao = {
             callback(err, groups);
         });
     },
-    find: function(query, callback) {
-        db.query('MATCH(group:group) WHERE group.name =~ \'(?i).*'+query.query+'.*\' RETURN group SKIP {skip} LIMIT {limit}', query, function(err, results) {
+    find: function(predicates, callback) {
+        var query = 'MATCH(group:group) WHERE group.name =~ \'(?i).*'+predicates.query
+                    +'.*\' RETURN group SKIP {skip} LIMIT {limit}';
+        db.query(query, predicates, function(err, results) {
             callback(err, results);
         });
     },
@@ -40,6 +42,20 @@ var groupDao = {
             id: group.id, count: count
         }, function(err, members) {
             callback(err, members);
+        });
+    },
+    findMemberRelationship: function(username, groupId, callback) {
+        var query = 'MATCH(u:user{username:{username}})-[r:IS_MEMBER]-(g:group{groupId:{groupId}}) RETURN r';
+        db.query(query, {
+            username: username,
+            groupId: groupId
+        }, function(err, relationship) {
+            callback(err, relationship);
+        });
+    },
+    removeGroup: function(groupId, callback) {
+        db.query('MATCH(g:group{groupId:{groupId}}) DETACH DELETE g', {groupId: groupId}, function(err, response) {
+            callback(err, response);
         });
     }
 }
