@@ -1,11 +1,15 @@
 var express = require('express');
 var groupDao = getmodule('database/groupDao');
+var intFormat = require('biguint-format');
+var flakeIdgen = require('flake-idgen');
+var flakeGen = new flakeIdgen();
 
 var groupService = {
     addGroup: function(req, res, next) {
         var group = req.body;
         var user = req.user;
         group.creationDate = new Date().getTime();
+        group.groupId = intFormat(flakeGen.next(), 'dec');
         groupDao.addGroup(group, user, function(err, response) {
             if(err) res.status(err.statusCode).json(err);
             else res.status(200).json(response);
@@ -58,7 +62,6 @@ var groupService = {
                         array.forEach(function(key) {
                             if(group[key] == undefined) group[key] = oldGroup[key];
                         });
-                        delete group.groupId;
                         groupDao.updateGroup(group, function(err, result) {
                             if(err) res.status(err.statusCode).json(err);
                             else res.status(200).json(result);

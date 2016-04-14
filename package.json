@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
+    "biguint-format": "^1.0.0",
     "body-parser": "~1.8.1",
     "cors": "^2.5.3",
     "debug": "~2.0.0",
@@ -26,6 +27,7 @@
     "express": "~4.9.0",
     "express-jwt": "^3.3.0",
     "express-myconnection": "^1.0.4",
+    "flake-idgen": "^1.0.0",
     "getmodule": "0.0.3",
     "jade": "~1.6.0",
     "json-gate": "^0.8.22",

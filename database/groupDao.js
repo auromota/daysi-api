@@ -35,27 +35,24 @@ var groupDao = {
         });
     },
     findGroup: function(groupId, callback) {
-        db.read(groupId, function(err, node) {
+        db.find({groupId: groupId}, 'group', function(err, results) {
             if(err) callback(err);
-            db.readLabels(groupId, function(err, results) {
-                if(err) callback(err);
-                else {
-                    if(results.indexOf('group') > -1) {
-                        db.relationships(groupId, 'in', 'IS_MEMBER', function(err, relationships) {
-                            if(err) callback(err);
-                            else {
-                                if(relationships && relationships.length) {
-                                    callback(err, {group: node, members: relationships})
-                                } else {
-                                    callback(err, {group: node, members: []});
-                                }
+            else {
+                if(results && results.length) {
+                    db.relationships(results[0].id, 'in', 'IS_MEMBER', function(err, relationships) {
+                        if(err) callback(err);
+                        else {
+                            if(relationships && relationships.length) {
+                                callback(err, {group: results[0], members: relationships})
+                            } else {
+                                callback(err, {group: results[0], members: []});
                             }
-                        });
-                    } else {
-                        callback(err, undefined);
-                    }
+                        }
+                    });
+                } else {
+                    callback(err, undefined);
                 }
-            });
+            }
         });
     },
     updateGroup: function(group, callback) {

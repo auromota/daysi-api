@@ -20,7 +20,7 @@ var schema = createSchema({
             maximum: 1
         },
         groupId: {
-            type: 'integer',
+            type: 'string',
             required: true
         }
     },

@@ -18,7 +18,15 @@ db.constraints.uniqueness.createIfNone('user', 'username', function(err, constra
     else {
         db.constraints.uniqueness.createIfNone('user', 'email', function(err, constraint) {
             if(err) console.log({message:'API could not be started.', err: err});
-            app.listen(8080);
+            else {
+                db.constraints.uniqueness.createIfNone('group', 'groupId', function(err, constraint) {
+                    if(err) console.log({message:'API could not be started.', err: err});
+                    else {
+                        app.listen(process.env.PORT || 8080);
+                        console.log('Server is running!');
+                    }
+                })
+            }
         })
     }
 });
