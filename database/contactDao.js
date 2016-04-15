@@ -1,6 +1,6 @@
 var db = getmodule('database/connection');
 
-var contactRequestDao = {
+var contactDao = {
     addRequest: function(request, callback) {
         db.relate(request.userId, 'REQUESTED_CONTACT', request.requestedUserId, {date: request.date}, function(err, relationship) {
                 callback(err, relationship);
@@ -31,4 +31,4 @@ var contactRequestDao = {
     }
 }
 
-module.exports = contactRequestDao;
+module.exports = contactDao;
