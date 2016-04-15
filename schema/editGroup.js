@@ -16,7 +16,8 @@ var schema = createSchema({
         },
         groupId: {
             type: 'string',
-            required: true
+            required: true,
+            pattern: '^[0-9]*$'
         }
     },
     additionalProperties: false
