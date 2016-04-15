@@ -18,12 +18,12 @@ var contactRequestController = {
     },
     acceptRequest: function(req, res, next) {
         try {
-            var schema = getmodule('schema/contactRequest');
+            var schema = getmodule('schema/acceptRequest');
             if (schema) {
                 schema.validate(req.body);
             }
             if (req.user.id == req.body.userId) {
-                res.status(400).json({message: 'You can not accept a contact request from yourself.'});
+                res.status(400).json({message: 'You can not accept or a deny a contact request from yourself.'});
             } else {
                 service.acceptRequest(req, res, next);
             }

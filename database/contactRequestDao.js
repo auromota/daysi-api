@@ -23,6 +23,11 @@ var contactRequestDao = {
         }, function(err, relationships) {
             callback(err, relationships);
         });
+    },
+    denyRequest: function(id, callback) {
+        db.rel.delete(id, function(err) {
+            callback(err, {status: true});
+        })
     }
 }
 
