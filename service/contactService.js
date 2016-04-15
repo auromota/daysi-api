@@ -1,5 +1,5 @@
 var express = require('express');
-var contactRequestDao = getmodule('database/contactRequestDao');
+var contactDao = getmodule('database/contactDao');
 
 var contactRequestService = {
     contactRequest: function(req, res, next) {
@@ -8,11 +8,11 @@ var contactRequestService = {
             requestedUserId : req.body.userId,
             date : new Date().getTime()
         }
-        contactRequestDao.getRelationships(request.userId, request.requestedUserId, function(err, relationship) {
+        contactDao.getRelationships(request.userId, request.requestedUserId, function(err, relationship) {
             if(err) res.status(err.statusCode).json(err);
             else {
                 if(!relationship.length) {
-                    contactRequestDao.addRequest(request, function(err, relationship) {
+                    contactDao.addRequest(request, function(err, relationship) {
                         if(err) res.status(err.statusCode).json(err);
                         else res.status(200).json(relationship);
                     });
@@ -28,7 +28,7 @@ var contactRequestService = {
             requestedUserId : req.user.id,
             type: req.body.accept
         };
-        contactRequestDao.getRelationships(request.userId, request.requestedUserId, function(err, relationships) {
+        contactDao.getRelationships(request.userId, request.requestedUserId, function(err, relationships) {
             if(err) res.status(err.statusCode).json(err);
             else {
                 if(relationships.length) {
@@ -44,12 +44,12 @@ var contactRequestService = {
                     });
                     if(!isContact && canAccept) {
                         if(request.type) {
-                            contactRequestDao.acceptRequest(request, function(err, response) {
+                            contactDao.acceptRequest(request, function(err, response) {
                                 if(err) res.status(err.statusCode).json(err);
                                 else res.status(200).json(response);
                             });
                         } else {
-                            contactRequestDao.denyRequest(requestedContactRel, function(err, response) {
+                            contactDao.denyRequest(requestedContactRel, function(err, response) {
                                 if(err) res.status(err.statusCode).json(err);
                                 else res.status(200).json(response);
                             });

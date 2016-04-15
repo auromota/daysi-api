@@ -1,4 +1,4 @@
-var service = getmodule('service/contactRequestService');
+var service = getmodule('service/contactService');
 
 var contactRequestController = {
     contactRequest: function (req, res, next) {
