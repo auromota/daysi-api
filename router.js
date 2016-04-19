@@ -3,6 +3,8 @@ var router = express.Router();
 var userController = getmodule('controller/userController');
 var groupController = getmodule('controller/groupController');
 var contactController = getmodule('controller/contactController');
+var groupUserController = getmodule('controller/groupUserController');
+var groupUserDao = getmodule('database/groupUserDao');
 var auth = getmodule('auth');
 
 router.route('/signin').post(userController.signIn);
@@ -19,5 +21,7 @@ router.route('/groups/:groupId').delete(auth.isAuthorized, groupController.remov
 
 router.route('/contact-requests').post(auth.isAuthorized, contactController.contactRequest);
 router.route('/contact-requests').put(auth.isAuthorized, contactController.acceptRequest);
+
+router.route('/groups/join').post(auth.isAuthorized, groupUserController.requestGroup);
 
 module.exports = router;

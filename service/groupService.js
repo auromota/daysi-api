@@ -1,5 +1,6 @@
 var express = require('express');
 var groupDao = getmodule('database/groupDao');
+var groupUserDao = getmodule('database/groupUserDao');
 var intFormat = require('biguint-format');
 var flakeIdgen = require('flake-idgen');
 var flakeGen = new flakeIdgen();
@@ -33,7 +34,7 @@ var groupService = {
             else {
                 if(results && results.length) {
                     var group = results[0];
-                    groupDao.findMembersForGroup(5, 'IS_MEMBER', group, function(err, results) {
+                    groupUserDao.findMembersForGroup(5, 'IS_MEMBER', group, function(err, results) {
                         if(err) res.status(err.statusCode).json(err);
                         else {
                             results.forEach(function(member) {
@@ -84,18 +85,22 @@ var groupService = {
     removeGroup: function(req, res, next) {
         var groupId = req.params.groupId;
         var username = req.user.username;
-        groupDao.findMemberRelationship(username, groupId, function(err, relationship) {
+        groupUserDao.findMemberRelationship(username, groupId, function(err, relationships) {
             if(err) res.status(err.statusCode).json(err);
             else {
-                if(relationship && relationship.length) {
-                    if(relationship[0].properties.isAdmin) {
-                        groupDao.removeGroup(groupId, function(err, response) {
-                            if(err) res.status(err.statusCode).json(err);
-                            else res.status(200).json(response);
-                        });
-                    } else {
-                        res.status(403).json({status: false, message: 'Only administrators can remove groups.'});
-                    }
+                if(relationships && relationships.length) {
+                    relationships.forEach(function(rel) {
+                        if(rel.type == 'IS_MEMBER') {
+                            if(rel.properties.isAdmin) {
+                                groupDao.removeGroup(groupId, function(err, response) {
+                                    if(err) res.status(err.statusCode).json(err);
+                                    else res.status(200).json(response);
+                                });
+                            } else {
+                                res.status(403).json({status: false, message: 'Only administrators can remove groups.'});
+                            }
+                        }
+                    });
                 } else {
                     res.status(403).json({status: false, message: 'You are not member of this group.'});
                 }
