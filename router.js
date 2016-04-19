@@ -19,8 +19,9 @@ router.route('/groups/:groupId').get(auth.isAuthorized, groupController.findGrou
 router.route('/groups').put(auth.isAuthorized, groupController.updateGroup);
 router.route('/groups/:groupId').delete(auth.isAuthorized, groupController.removeGroup);
 
-router.route('/contact-requests').post(auth.isAuthorized, contactController.contactRequest);
-router.route('/contact-requests').put(auth.isAuthorized, contactController.acceptRequest);
+router.route('/contacts').get(auth.isAuthorized, contactController.findContacts);
+router.route('/contacts/request').post(auth.isAuthorized, contactController.contactRequest);
+router.route('/contacts/request').put(auth.isAuthorized, contactController.acceptRequest);
 
 router.route('/groups/join').post(auth.isAuthorized, groupUserController.requestGroup);
 

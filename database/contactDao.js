@@ -28,6 +28,24 @@ var contactDao = {
         db.rel.delete(id, function(err) {
             callback(err, {status: true});
         })
+    },
+    find: function(predicates, callback) {
+        var query = 'MATCH(user:user{username:{username}})-[r:IS_CONTACT]-(users:user) RETURN users SKIP {skip} LIMIT {limit}';
+        db.query(query, predicates, function(err, results) {
+            if(err) return callback(err);
+            var response = {
+                contacts: results
+            }
+            query = 'MATCH(user:user{username:{username}})-[r:IS_CONTACT]-(users:user) RETURN count(users) as count';
+            db.query(query, predicates, function(err, result) {
+                if(err) return callback(err);
+                response.totalContacts = result[0].count;
+                response.contacts.forEach(function(contact) {
+                    delete contact.password;
+                });
+                callback(err, response);
+            })
+        });
     }
 }
 

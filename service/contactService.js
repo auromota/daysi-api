@@ -2,6 +2,18 @@ var express = require('express');
 var contactDao = getmodule('database/contactDao');
 
 var contactRequestService = {
+    findContacts: function(req, res, next) {
+        var query = {
+            query: req.query.query,
+            skip: parseInt(req.query.page)*parseInt(req.query.size),
+            limit: parseInt(req.query.size),
+            username: req.user.username
+        };
+        contactDao.find(query, function(err, contacts) {
+            if(err) res.status(err.statusCode).json(err);
+            else res.status(200).json(contacts);
+        });
+    },
     contactRequest: function(req, res, next) {
         var request = {
             userId : req.user.id,

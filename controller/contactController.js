@@ -1,6 +1,17 @@
 var service = getmodule('service/contactService');
 
 var contactRequestController = {
+    findContacts: function(req, res, next) {
+        try {
+            var schema = getmodule('schema/query/findContacts');
+            if (schema) {
+                schema.validate(req.query);
+            }
+            service.findContacts(req, res, next);
+        } catch(err) {
+            res.status(400).json(err+'');
+        }
+    },
     contactRequest: function (req, res, next) {
         try {
             var schema = getmodule('schema/contactRequest');
