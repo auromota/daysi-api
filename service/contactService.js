@@ -75,6 +75,16 @@ var contactRequestService = {
                 }
             }
         });
+    },
+    removeContact: function(req, res, next) {
+        var request = {
+            firstUser: req.user.id,
+            secondUser: parseInt(req.query.userId)
+        }
+        contactDao.removeContact(request, function(err, result) {
+            if(err) res.status(500).json(err);
+            else res.status(200).json(result);
+        })
     }
 };
 

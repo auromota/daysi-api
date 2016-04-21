@@ -22,6 +22,7 @@ router.route('/groups/:groupId').delete(auth.isAuthorized, groupController.remov
 router.route('/contacts').get(auth.isAuthorized, contactController.findContacts);
 router.route('/contacts/request').post(auth.isAuthorized, contactController.contactRequest);
 router.route('/contacts/request').put(auth.isAuthorized, contactController.acceptRequest);
+router.route('/contacts').delete(auth.isAuthorized, contactController.removeContact);
 
 router.route('/groups/join').post(auth.isAuthorized, groupUserController.requestGroup);
 
