@@ -24,5 +24,6 @@ router.route('/contacts/request').post(auth.isAuthorized, contactController.cont
 router.route('/contacts/request').put(auth.isAuthorized, contactController.acceptRequest);
 
 router.route('/groups/join').post(auth.isAuthorized, groupUserController.requestGroup);
+router.route('/groups/add').post(auth.isAuthorized, groupUserController.addUserToGroup);
 
 module.exports = router;

@@ -22,6 +22,24 @@ var groupUserService = {
                 }
             }
         });
+    },
+    addUserToGroup: function(req, res, next) {
+        groupUserDao.isAdmin(req.user.username, req.body.groupId, function(err, isAdmin) {
+            if(isAdmin) {
+                groupUserDao.isUserInGroup(req.body.username, req.body.groupId, function(err, isInGroup) {
+                    if(!isInGroup) {
+                        groupUserDao.addUserToGroup(req.body.username, req.body.groupId, function(err, rel) {
+                            if(err) res.status(500).json(err);
+                            else res.status(200).json(rel);
+                        });
+                    } else {
+                        res.status(400).json({status: false, message: 'User is already in group.'});
+                    }
+                })
+            } else {
+                res.status(403).json({status: false, message: 'Only administrators can add users to group.'});
+            }
+        });
     }
 };
 

@@ -18,7 +18,7 @@ var groupUserDao = {
         });
     },
     findMemberRelationship: function(username, groupId, callback) {
-        var query = 'match(u:user{username:{username}})-[r]-(g:group{groupId:{groupId}}) return r';
+        var query = 'MATCH(u:user{username:{username}})-[r]-(g:group{groupId:{groupId}}) RETURN r';
         db.query(query, {
             username: username,
             groupId: groupId
@@ -30,6 +30,37 @@ var groupUserDao = {
         var query = 'MATCH(u:user{username:{username}}), (group:group{groupId:{groupId}}) CREATE u-[relationship:REQUESTED_JOIN{date:{date}}]->group return relationship, group';
         db.query(query, request, function(err, response) {
             callback(err, response);
+        });
+    },
+    isUserInGroup: function(username, groupId, callback) {
+        var query = 'MATCH(u:user{username:{username}})-[r:IS_MEMBER]-(g:group{groupId:{groupId}}) RETURN r';
+        db.query(query, {
+            username: username,
+            groupId: groupId
+        }, function(err, rel) {
+            var response = rel.length ? true : false;
+            callback(err, response);
+        });
+    },
+    isAdmin: function(username, groupId, callback) {
+        var query = 'MATCH(u:user{username:{username}})-[r:IS_MEMBER{isAdmin:true}]-(g:group{groupId:{groupId}}) RETURN r';
+        db.query(query, {
+            username: username,
+            groupId: groupId
+        }, function(err, rel) {
+            var response = rel.length ? true : false;
+            callback(err, response);
+        });
+    },
+    addUserToGroup: function(username, groupId, callback) {
+        var date = new Date().getTime();
+        var query = 'MATCH(u:user{username:{username}}), (g:group{groupId:{groupId}}) CREATE u-[r:IS_MEMBER{since:{date}, isAdmin: false}]->g RETURN r';
+        db.query(query, {
+            username: username,
+            groupId: groupId,
+            date: date
+        }, function(err, rel) {
+            callback(err, rel);
         });
     }
 }
