@@ -71,6 +71,15 @@ var groupUserDao = {
         }, function(err, rel) {
             callback(err, rel);
         });
+    },
+    makeUserAdmin: function(username, groupId, callback) {
+        var query = 'MATCH(u:user{username:{username}})-[r:IS_MEMBER]-(g:group{groupId:{groupId}}) SET r.isAdmin = true RETURN r';
+        db.query(query, {
+            username: username,
+            groupId: groupId
+        }, function(err, rel) {
+            callback(err, rel);
+        });
     }
 }
 

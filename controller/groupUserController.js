@@ -41,6 +41,21 @@ var groupUserController = {
         } catch(err) {
             res.status(400).json(err+'');
         }
+    },
+    makeUserAdmin: function(req, res, next) {
+        try {
+            var schema = getmodule('schema/userGroup');
+            if (schema) {
+                schema.validate(req.body);
+            }
+            if(req.body.username == req.user.username) {
+                res.status(400).json('You can not give an administrator role to yourself.');
+            } else {
+                service.makeUserAdmin(req, res, next);
+            }
+        } catch(err) {
+            res.status(400).json(err+'');
+        }
     }
 };
 

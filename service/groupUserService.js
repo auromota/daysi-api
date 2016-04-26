@@ -58,6 +58,24 @@ var groupUserService = {
                 res.status(403).json({status: false, message: 'Only administrators can remove users from group.'});
             }
         });
+    },
+    makeUserAdmin: function(req, res, next) {
+        groupUserDao.isAdmin(req.user.username, req.body.groupId, function(err, isAdmin) {
+            if(isAdmin) {
+                groupUserDao.isUserInGroup(req.body.username, req.body.groupId, function(err, isInGroup) {
+                    if(isInGroup) {
+                        groupUserDao.makeUserAdmin(req.body.username, req.body.groupId, function(err, rel) {
+                            if(err) res.status(500).json(err);
+                            else res.status(200).json(rel);
+                        });
+                    } else {
+                        res.status(400).json({status: false, message: 'User is not in the group.'});
+                    }
+                })
+            } else {
+                res.status(403).json({status: false, message: 'Only administrators can remove users from group.'});
+            }
+        });
     }
 };
 
