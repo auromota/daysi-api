@@ -14,7 +14,7 @@ var contactRequestController = {
     },
     contactRequest: function (req, res, next) {
         try {
-            var schema = getmodule('schema/contactRequest');
+            var schema = getmodule('schema/contact');
             if (schema) {
                 schema.validate(req.body);
             }
@@ -37,6 +37,21 @@ var contactRequestController = {
                 res.status(400).json({message: 'You can not accept or a deny a contact request from yourself.'});
             } else {
                 service.acceptRequest(req, res, next);
+            }
+        } catch(err) {
+            res.status(400).json(err+'');
+        }
+    },
+    removeContact: function(req, res, next) {
+        try {
+            var schema = getmodule('schema/query/removeContact');
+            if (schema) {
+               schema.validate(req.query); 
+            }
+            if (req.user.id == req.query.userId) {
+                res.status(400).json({message: 'You can not remove yourself.'});
+            } else {
+                service.removeContact(req, res, next);
             }
         } catch(err) {
             res.status(400).json(err+'');

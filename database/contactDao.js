@@ -46,6 +46,14 @@ var contactDao = {
                 callback(err, response);
             })
         });
+    },
+    removeContact: function(request, callback) {
+        var query = 'MATCH (firstUser:user)-[r:IS_CONTACT]-(secondUser:user), ' + 
+                    '(firstUser:user)-[r2:REQUESTED_CONTACT]-(secondUser:user) ' +
+                    'WHERE ID(firstUser) = 48 AND ID(secondUser) = 53 DELETE r, r2';
+        db.query(query, request, function(err, results) {
+           callback(err, results); 
+        });
     }
 }
 
