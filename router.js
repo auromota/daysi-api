@@ -26,5 +26,6 @@ router.route('/contacts').delete(auth.isAuthorized, contactController.removeCont
 
 router.route('/groups/join').post(auth.isAuthorized, groupUserController.requestGroup);
 router.route('/groups/add').post(auth.isAuthorized, groupUserController.addUserToGroup);
+router.route('/groups/remove').post(auth.isAuthorized, groupUserController.removeUserFromGroup);
 
 module.exports = router;

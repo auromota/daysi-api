@@ -62,6 +62,15 @@ var groupUserDao = {
         }, function(err, rel) {
             callback(err, rel);
         });
+    },
+    removeUserFromGroup: function(username, groupId, callback) {
+        var query = 'MATCH(u:user{username:{username}})-[r:IS_MEMBER]-(g:group{groupId:{groupId}}) DELETE r';
+        db.query(query, {
+            username: username,
+            groupId: groupId
+        }, function(err, rel) {
+            callback(err, rel);
+        });
     }
 }
 
